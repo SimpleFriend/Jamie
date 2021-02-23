@@ -1,0 +1,123 @@
+
+body {
+    color: white;
+    font-family: asapregular;
+    font-size: 0.8rem;
+}
+
+#panel_container {
+    position: fixed;
+    width: 20vw;
+    height: 100vh;
+}
+
+#panel {
+    background: #222;
+    width: calc(20vw + 17px);
+    height: calc(100vh + 17px);
+    border-left: 1px solid #000;
+    overflow: scroll;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#main_container {
+    position: fixed;
+    left: 20vw;
+    width: 80vw;
+    height: 100vh;
+}
+
+#main {
+    background: #000;
+    width: calc(80vw + 17px);
+    height: calc(100vh + 17px);
+    overflow: scroll;
+}
+
+.panel_item {
+    background: #222;
+    padding: 1em;
+    border-bottom: 1px solid #000;
+    cursor: default;
+}
+
+.panel_item:hover {
+    background: #333;
+    color: #fff !important;
+}
+
+.board_item {
+    text-align: right;
+    background: #111;
+    color: #ddd;
+    margin-top: 18px;
+    margin-left: 18px;
+    margin-right: 18px;
+    border-left: 2px solid #111;
+}
+
+.board_item_title {
+    max-width: 100%;
+    display: inline-block;
+    height: 18px;
+}
+
+.board_item_title_text {
+    max-width: calc(100% - 40px - 2em);
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    background: #222;
+    border-bottom: 1px solid #000;
+    padding-left: 1em;
+    padding-right: 1em;
+    height: 18px;
+    line-height: 18px;
+}
+
+.board_item_title:before {
+    content: url(../img/left-border.png);
+}
+
+.board_item_title:after {
+    content: url(../img/right-border.png);
+}
+
+.board_item:hover .board_item_title:before {
+    content: url(../img/left-border-light.png);
+}
+
+.board_item:hover .board_item_title:after {
+    content: url(../img/right-border-light.png);
+}
+
+.board_item_content {
+    text-align: left;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 18px;
+}
+
+.board_item:hover .board_item_title_text {
+    color: #fff;
+    background: #333;
+}
+
+.board_item:hover {
+    border-left: 2px solid #333;
+}
+
+input[type="text"] {
+    background: black;
+    margin-left: 1em;
+    outline: none;
+    color: white;
+}
+
+label {
+    margin-left: 1em;
+}
+

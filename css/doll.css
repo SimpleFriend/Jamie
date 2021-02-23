@@ -1,0 +1,103 @@
+/*
+ * Copyright (c) 2014, Fashiontec (http://fashiontec.org)
+ * Licensed under LGPL, Version 3
+ */
+
+/*@font-face {
+	font-family: font;
+	src: url("Tomatoes-O8L8.ttf");
+}
+
+body * {
+	font-family: font;
+	color: #808080;
+	text-shadow: 0 1px 1px #fff;
+}*/
+
+body {
+	background-color: #808080;
+	margin: 0px;
+	overflow: hidden;
+}
+
+#title {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	padding: 15px;
+	display: none;
+}
+
+#info {
+	display: none;
+}
+
+.dg.ac, .dg.ac * {
+    display: none;
+    font-family: Calibri;
+}
+
+#stats {
+	position: fixed;
+	bottom: 0;
+	z-index: 2;
+	left: 0;
+}
+
+#container canvas {
+	opacity: 0.0001;
+	transition: opacity 1s;
+    width: calc(20vw + 17px) !important;
+    height: calc(20vw + 17px) !important;
+    z-index: 4;
+}
+
+#panel-top {
+    background-image: url(../img/JAMIE.PNG);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+	border-bottom: 1px solid black;
+}
+
+@keyframes heartbeat {
+	0% {
+		transform: scale(0.8);
+	}
+	20% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(0.8);
+	}
+	60% {
+		transform: scale(1);
+	}
+	80% {
+		transform: scale(0.8);
+	}
+	100% {
+		transform: scale(0.8);
+	}
+}
+
+#heart {
+    opacity: 0.0001;
+    transition: opacity 1s;
+    width: 2vh;
+    height: 2vh;
+    animation: heartbeat 0.8s infinite;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+}
+
+#emotion {
+	position: fixed;
+	top: 15px;
+	left: 100px;
+	z-index: 30;
+	width: 60px;
+	height: 60px;
+}
