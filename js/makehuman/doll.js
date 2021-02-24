@@ -155,7 +155,7 @@ var App = function(makehuman, dat, _, THREE, Detector, Nanobar, Stats) {
         // add some default clothes
         //this.human.proxies.toggleProxy('female_sportsuit01',true)
         this.human.proxies.toggleProxy('VNeckTop',true)
-        this.human.proxies.toggleProxy('frenchbra',true)
+        //this.human.proxies.toggleProxy('frenchbra',true)
         this.human.proxies.toggleProxy('Tightjeans',true)
         this.human.proxies.toggleProxy('eyebrow010',true)
         var randomHair = _.sample(['Braid01', 'blondwithheadband', 'ponytail01', 'bob02'])

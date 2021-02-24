@@ -121,3 +121,27 @@ label {
     margin-left: 1em;
 }
 
+::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #808080;
+    -webkit-border-radius: 2px;
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+::-webkit-scrollbar-corner {
+    background: #000;
+}
+
+.CodeMirror {
+    height: 50vh;
+}
+
+#cm-editor-title {
+    background: #202020;
+    line-height: 2em;
+}

@@ -39,7 +39,7 @@ jeda.loadCSS = function(filename) {
  * board manipulation
  */
 
-jeda.addBoard = function(name, html) {
+jeda.addBoard = function(name, html, cb, timeout) {
 
     if (jeda.mainDIV.lastChild) {
         jeda.mainDIV.lastChild.remove();
@@ -65,6 +65,8 @@ jeda.addBoard = function(name, html) {
             <div class="board_item_content">${html}</div>
     </div><br>
     `;
+
+    if (cb) setTimeout(cb, timeout || 0);
 }
 
 jeda.toggleVisibility = function(item, name) {
