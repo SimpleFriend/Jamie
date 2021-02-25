@@ -27,6 +27,12 @@ var db = levelgraph(level("coredb"));
 
 
 
+const voc = {
+    isa: "isa",
+    gen: "gen"
+};
+
+
 
 
 function forward() {
@@ -58,6 +64,164 @@ function forward() {
         });
     });
 }
+
+
+
+const newId = (function() {
+    var num = 0n;
+    return function(identifier) {
+        let id = identifier + '/' + num;
+        num = num + 1n;
+        return id;
+    }
+})();
+
+
+
+function buildTriples(parsed, existingLabels, buildQuery) {
+
+    let labels = existingLabels || {};
+    let result = [];
+
+    let p = 0;
+    let positions = ["predicate", "subject", "object"];
+    let pos = 0;
+    let currentTriple = {};
+
+    while (p < parsed.length) {
+
+
+
+        if (parsed[p].literalTriple) {
+            result.push(parsed[p].literalTriple);
+        }
+
+
+
+        if (parsed[p].directReference || parsed[p].instanceName) {
+
+            currentTriple[ positions[pos] ] = parsed[p].directReference || parsed[p].instanceName;
+        }
+
+
+
+        if (parsed[p].variable) {
+
+            currentTriple[ positions[pos] ] = buildQuery ? db.v(parsed[p].variable) : parsed[p].variable + '?';
+        }
+
+
+
+        if (parsed[p].label) {
+
+            if (labels[parsed[p].label]) {
+
+                currentTriple[ positions[pos] ] = labels[parsed[p].label];
+
+            } else {
+
+                let instance = newId(parsed[p].label);
+                currentTriple[ positions[pos] ] = instance;
+                result.push({
+                    subject: instance,
+                    predicate: voc.isa,
+                    object: parsed[p].label
+                });
+            }
+        }
+
+
+
+        if (parsed[p].instanceLabel) labels[parsed[p].instanceLabel] = currentTriple[ positions[pos] ];
+
+
+
+        ++pos;
+        if (pos > 2) {
+            result.push(currentTriple);
+            currentTriple = {};
+            pos = 0;
+        }
+
+
+
+        ++p;
+    }
+    return result;
+}
+
+
+
+function buildStructures(parsed) {
+    
+    parsed.forEach(struct => {
+
+        if (Array.isArray(struct)) {
+
+
+
+            if (struct[0].head == "put") {
+
+                db.put(buildTriples(struct.slice(1)));
+            }
+
+
+
+            if (struct[0].head == "rule") {
+
+                buildRule(struct.slice(1));
+            }
+
+
+
+        }
+    });
+}
+
+
+
+function buildRule(parsed) {
+
+    let labels = {};
+    var query = [];
+    var todo = [];
+
+    parsed.forEach(struct => {
+
+        if (Array.isArray(struct)) {
+
+
+
+            if (struct[0].head == "if") {
+
+                query = query.concat(buildTriples(struct.slice(1), labels, true));
+            }
+
+
+
+            if (struct[0].head == "do") {
+
+                todo.push(struct.slice(1));
+            }
+        }
+    });
+
+
+    db.search(query, function(err, results) {
+
+        results.forEach(result => {
+
+            Object.assign(labels, result);
+
+            todo.forEach(doing => { db.put(buildTriples(doing, labels)); });
+        });
+    });
+}
+
+
+
+
+
 
 
 

@@ -30,9 +30,9 @@ term
 
 node
 = n:namedInstance { return n; }
-/ s:savedInstance { return s; }
+/ s:labelledInstance { return s; }
 / v:variable { return v; }
-/ a:anonymousInstance { return a; }
+/ l:label { return l; }
 / d:directReference { return d; }
 / v:vectorComponent { return v; }
 
@@ -70,28 +70,26 @@ head
 }
 
 
-savedInstance
-= l:identifier ':' c:identifier _* {
-	return {
-        instanceLabel: l,
-        concept: c
-    }
+labelledInstance
+= l:identifier ':' n:node {
+	Object.assign(n, { instanceLabel: l });
+    return n;
 }
 
 
 namedInstance
-= c:identifier '/' n:identifier _* {
+= c:identifier '/' n:(identifier/DIGIT+) _* {
 	return {
-        instanceName: n,
+        instanceName: c + '/' + (n.join ? n.join('') : n),
         concept: c
     }
 }
 
 
-anonymousInstance
+label
 = i:identifier {
 	return {
-    	anonymousInstance: i,
+    	label: i,
     }
 }
 
