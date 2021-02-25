@@ -9,9 +9,9 @@ jeda.addBoard("simple inference", `
 `);
 
 
-db.put({ subject: "animal", predicate: "gen", object: "cat" });
+//db.put({ subject: "animal", predicate: "gen", object: "cat" });
 
-db.put({ subject: "felix", predicate: "isa", object: "cat" });
+//db.put({ subject: "felix", predicate: "isa", object: "cat" });
 
 
 

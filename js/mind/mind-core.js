@@ -26,13 +26,21 @@ var kdtree = new kdTree([], kdTreeDistance, dimensions);
 var db = levelgraph(level("coredb"));
 
 
-
 const voc = {
     isa: "isa",
     gen: "gen"
 };
 
 
+
+db.clear = function() {
+
+    db.get({}, function(err, results) {
+        results.forEach(result => db.del(result));
+    });    
+}
+
+db.clear();
 
 
 function forward() {
@@ -194,7 +202,14 @@ function buildRule(parsed) {
 
             if (struct[0].head == "if") {
 
-                query = query.concat(buildTriples(struct.slice(1), labels, true));
+                // double it because levelgraph is order-dependent and feels broken
+                let doubleRules = struct.slice(1).concat( struct.slice(1) );
+
+                let tri = buildTriples(doubleRules, labels, true);
+                query = query.concat(tri);
+
+                console.log("[tri labels]", labels);
+                console.log("[tri]", tri);
             }
 
 
@@ -205,15 +220,21 @@ function buildRule(parsed) {
             }
         }
     });
-
-
+    
     db.search(query, function(err, results) {
 
         results.forEach(result => {
 
             Object.assign(labels, result);
 
-            todo.forEach(doing => { db.put(buildTriples(doing, labels)); });
+            console.log("[result]", result);
+
+            todo.forEach(doing => { 
+
+                console.log("[doing]", doing);
+                console.log("[labels]", labels);
+                db.put(buildTriples(doing, labels));
+            });
         });
     });
 }
