@@ -86,3 +86,44 @@ function setEditorTitle(txt) {
 
 
 setEditorTitle("empty");
+
+
+
+
+setTimeout(function() {
+
+    mainEditor.setValue(`
+put(
+    'isa 'isidore 'cat
+    'gen 'animal 'cat
+)
+
+rule(
+    if(
+        'isa thing? concept?
+        'gen superconcept? concept?
+    )
+    do(
+        'isa thing superconcept
+    )
+)
+
+
+
+dim(
+    gender(male female)
+    age(young adult old)
+    species(dog cat cow)
+    rarity(common rare)
+)
+
+
+
+vec(test)(
+    
+    gender(-1)
+    age(-1)
+)    
+    `);
+}, 1000);
+

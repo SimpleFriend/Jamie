@@ -31,12 +31,10 @@ function dump() {
         document.getElementById("parsed-from-ed").innerHTML += "<br>TripleStore" + JSON.stringify(list, null, 4);
         document.getElementById("parsed-from-ed").innerHTML += "<br>Dimensions" + JSON.stringify(dimensions, null, 4);
         document.getElementById("parsed-from-ed").innerHTML += "<br>VectorStore" + JSON.stringify(vectorStore, null, 4);
+        document.getElementById("parsed-from-ed").innerHTML += "<br>PointStore" + JSON.stringify(pointStore, null, 4);
     });
 
 }
-
-
-
 
 
 

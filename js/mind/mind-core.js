@@ -4,11 +4,15 @@
 
 
 
-var vectorStore = {};
+const positions = ["predicate", "subject", "object"];
+
+
 
 
 
 var dimensions = {};
+
+
 
 
 
@@ -19,17 +23,25 @@ function kdTreeDistance(a, b){
 
 
 
+
+
 var pointStore = new kdTree([], kdTreeDistance, Object.keys(dimensions));
 
-
+var vectorStore = {};
 
 var tripleStore = levelgraph(level("tripleStore"));
+
+
+
+
 
 
 const voc = {
     isa: "isa",
     gen: "gen"
 };
+
+
 
 
 
@@ -44,6 +56,40 @@ tripleStore.clear();
 
 
 
+
+
+function insertVector(key, vector) {
+
+    vectorStore[key] = vector;
+
+    let point = Object.assign({ key: key }, vector.vector);
+    pointStore.insert(point);
+}
+
+
+
+
+
+tripleStore.originalPut = tripleStore.put;
+
+tripleStore.put = function(triples) {
+
+    if (!Array.isArray(triples)) triples = [triples];
+
+    triples.forEach(triple => {
+        positions.forEach(pos => {
+
+            if (!vectorStore[ triple[pos] ]) insertVector( triple[pos], new Vector() );
+        });
+    });
+
+    tripleStore.originalPut.apply(this, arguments);
+}
+
+
+
+
+
 const newId = (function() {
     var num = 0n;
     return function(identifier) {
@@ -55,13 +101,14 @@ const newId = (function() {
 
 
 
+
+
 function buildTriples(parsed, existingLabels, buildQuery) {
 
     let labels = existingLabels || {};
     let result = [];
 
     let p = 0;
-    let positions = ["predicate", "subject", "object"];
     let pos = 0;
     let currentTriple = {};
 
@@ -115,6 +162,8 @@ function buildTriples(parsed, existingLabels, buildQuery) {
 
 
 
+
+
 function buildStructures(parsed) {
     
     parsed.forEach(struct => {
@@ -151,10 +200,11 @@ function buildStructures(parsed) {
 
 
 
-
         }
     });
 }
+
+
 
 
 
@@ -170,7 +220,8 @@ function buildRule(parsed) {
 
             if (struct[0].head == "if") {
 
-                // double it because levelgraph is order-dependent and feels broken
+                // double it because levelgraph is order-dependent
+                // which is not the expected behavior
                 let doubleRules = struct.slice(1).concat( struct.slice(1) );
 
                 let tri = buildTriples(doubleRules, labels, true);
@@ -200,6 +251,8 @@ function buildRule(parsed) {
 
 
 
+
+
 function buildDimension(parsed) {
 
     parsed.forEach(struct => {
@@ -211,10 +264,14 @@ function buildDimension(parsed) {
 
 
 
+
+
 function buildVector(target, vec) {
 
     vectorStore[target] = buildAnonymousVector(vec);
 }
+
+
 
 
 
@@ -229,6 +286,12 @@ function buildAnonymousVector(parsed) {
 
     return result;
 }
+
+
+
+
+
+
 
 
 
