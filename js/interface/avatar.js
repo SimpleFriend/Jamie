@@ -90,9 +90,9 @@ function l() {
 
     // temporalis
 
-    devTemporalisLeft = (wantedTemporalisL - app.human.skeleton.bones[138].quaternion.x) / 15;
-    devTemporalisRight = (wantedTemporalisR - app.human.skeleton.bones[140].quaternion.x) / 15;
-    devSmile = (wantedSmile - curSmile) / 10;
+    devTemporalisLeft = (wantedTemporalisL - app.human.skeleton.bones[138].quaternion.x) / 15 / 3;
+    devTemporalisRight = (wantedTemporalisR - app.human.skeleton.bones[140].quaternion.x) / 15 / 3;
+    devSmile = (wantedSmile - curSmile) / 10 / 3;
 
     app.human.skeleton.bones[138].quaternion.x += devTemporalisLeft;
     app.human.skeleton.bones[140].quaternion.x += devTemporalisRight;

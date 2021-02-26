@@ -4,6 +4,7 @@
 jeda.addBoard("parser", `
 
     <button onclick="parseEditor()">parseEditor()</button>
+    <button onclick="dump()">dump()</button>
     <pre id="parsed-from-ed"></pre>
 
     `, function () {
@@ -19,12 +20,28 @@ function parseEditor() {
     var parsed = parser.parse(source);
 
     buildStructures(parsed);
+}
 
-    db.get({  }, function (err, list) {
 
-        document.getElementById("parsed-from-ed").innerHTML = JSON.stringify(list, null, 4);
+
+function dump() {
+
+    tripleStore.get({  }, function (err, list) {
+
+        document.getElementById("parsed-from-ed").innerHTML += "<br>TripleStore" + JSON.stringify(list, null, 4);
+        document.getElementById("parsed-from-ed").innerHTML += "<br>Dimensions" + JSON.stringify(dimensions, null, 4);
+        document.getElementById("parsed-from-ed").innerHTML += "<br>VectorStore" + JSON.stringify(vectorStore, null, 4);
     });
 
 }
+
+
+
+
+
+
+
+
+
 
 

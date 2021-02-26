@@ -4,11 +4,11 @@
 
 
 
-var vectors = {};
+var vectorStore = {};
 
 
 
-var dimensions = [];
+var dimensions = {};
 
 
 
@@ -19,11 +19,11 @@ function kdTreeDistance(a, b){
 
 
 
-var kdtree = new kdTree([], kdTreeDistance, dimensions);
+var pointStore = new kdTree([], kdTreeDistance, Object.keys(dimensions));
 
 
 
-var db = levelgraph(level("coredb"));
+var tripleStore = levelgraph(level("tripleStore"));
 
 
 const voc = {
@@ -33,45 +33,14 @@ const voc = {
 
 
 
-db.clear = function() {
+tripleStore.clear = function() {
 
-    db.get({}, function(err, results) {
-        results.forEach(result => db.del(result));
+    tripleStore.get({}, function(err, results) {
+        results.forEach(result => tripleStore.del(result));
     });    
 }
 
-db.clear();
-
-
-function forward() {
-
-    db.search([
-        {
-            subject: db.v("superconcept"),
-            predicate: "gen",
-            object: db.v("concept")
-        },
-        {
-            subject: db.v("instance"),
-            predicate: "isa",
-            object: db.v("concept")
-        },
-
-    ], function(err, results) {
-
-        document.getElementById("simple-inference-output").innerHTML = '';
-
-        results.forEach(result => {
-
-            //document.getElementById("simple-inference-output").innerHTML += JSON.stringify(result, null, 4);
-
-            let triple = { subject: result.instance, predicate: "isa", object: result.superconcept};
-            document.getElementById("simple-inference-output").innerHTML += JSON.stringify(triple, null, 4);
-            
-            db.put(triple)
-        });
-    });
-}
+tripleStore.clear();
 
 
 
@@ -98,27 +67,19 @@ function buildTriples(parsed, existingLabels, buildQuery) {
 
     while (p < parsed.length) {
 
-
-
         if (parsed[p].literalTriple) {
             result.push(parsed[p].literalTriple);
         }
-
-
 
         if (parsed[p].directReference || parsed[p].instanceName) {
 
             currentTriple[ positions[pos] ] = parsed[p].directReference || parsed[p].instanceName;
         }
 
-
-
         if (parsed[p].variable) {
 
-            currentTriple[ positions[pos] ] = buildQuery ? db.v(parsed[p].variable) : parsed[p].variable + '?';
+            currentTriple[ positions[pos] ] = buildQuery ? tripleStore.v(parsed[p].variable) : parsed[p].variable + '?';
         }
-
-
 
         if (parsed[p].label) {
 
@@ -138,11 +99,7 @@ function buildTriples(parsed, existingLabels, buildQuery) {
             }
         }
 
-
-
         if (parsed[p].instanceLabel) labels[parsed[p].instanceLabel] = currentTriple[ positions[pos] ];
-
-
 
         ++pos;
         if (pos > 2) {
@@ -150,8 +107,6 @@ function buildTriples(parsed, existingLabels, buildQuery) {
             currentTriple = {};
             pos = 0;
         }
-
-
 
         ++p;
     }
@@ -170,7 +125,7 @@ function buildStructures(parsed) {
 
             if (struct[0].head == "put") {
 
-                db.put(buildTriples(struct.slice(1)));
+                tripleStore.put(buildTriples(struct.slice(1)));
             }
 
 
@@ -179,6 +134,21 @@ function buildStructures(parsed) {
 
                 buildRule(struct.slice(1));
             }
+
+
+
+            if (struct[0].head == "dim") {
+
+                buildDimension(struct.slice(1));
+            }
+
+
+
+            if (struct[0][0] && struct[0][0].head == "vec") {
+
+                buildVector(struct[0][1].label, struct.slice(1));
+            }
+
 
 
 
@@ -198,8 +168,6 @@ function buildRule(parsed) {
 
         if (Array.isArray(struct)) {
 
-
-
             if (struct[0].head == "if") {
 
                 // double it because levelgraph is order-dependent and feels broken
@@ -207,12 +175,7 @@ function buildRule(parsed) {
 
                 let tri = buildTriples(doubleRules, labels, true);
                 query = query.concat(tri);
-
-                console.log("[tri labels]", labels);
-                console.log("[tri]", tri);
             }
-
-
 
             if (struct[0].head == "do") {
 
@@ -220,20 +183,16 @@ function buildRule(parsed) {
             }
         }
     });
-    
-    db.search(query, function(err, results) {
+
+    tripleStore.search(query, function(err, results) {
 
         results.forEach(result => {
 
             Object.assign(labels, result);
 
-            console.log("[result]", result);
-
             todo.forEach(doing => { 
 
-                console.log("[doing]", doing);
-                console.log("[labels]", labels);
-                db.put(buildTriples(doing, labels));
+                tripleStore.put(buildTriples(doing, labels));
             });
         });
     });
@@ -241,8 +200,35 @@ function buildRule(parsed) {
 
 
 
+function buildDimension(parsed) {
+
+    parsed.forEach(struct => {
+
+        dimensions[struct[0].head] = struct.slice(1).map(value => value.label);
+    });
+
+}
 
 
+
+function buildVector(target, vec) {
+
+    vectorStore[target] = buildAnonymousVector(vec);
+}
+
+
+
+function buildAnonymousVector(parsed) {
+
+    let result = new Vector();
+
+    parsed.forEach(struct => {
+
+        result.add(new Vector({ [struct[0].head]: struct[1].vectorComponent }));
+    });
+
+    return result;
+}
 
 
 
